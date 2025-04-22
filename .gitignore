@@ -1,0 +1,8 @@
+# bin
+bin/
+
+# data
+tasks.json
+
+# Tests
+coverage/*
