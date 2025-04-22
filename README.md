@@ -71,7 +71,7 @@ make test
 
 ## License
 
-[Add your license here]
+[MIT](LICENSE.md)
 
 ## Contributing
 
