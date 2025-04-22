@@ -15,7 +15,7 @@ WINDOWS_BIN=$(BIN_DIR)/$(BINARY_NAME)-windows.exe
 
 all: test build
 
-build: clean build-macos build-linux build-windows
+build: clean build-macos build-macos-arm64 build-linux build-windows
 
 # Test targets
 test:
@@ -31,24 +31,6 @@ test-watch: ## Watch for changes and run tests
 
 test-verbose: ## Run tests in verbose mode
 	gotestsum --format standard-verbose --packages=all -- -v ./... --cover
-
-test-race: ## Run tests with race detector
-	gotestsum --format testdox -- -race ./...
-
-test-bench: ## Run benchmark tests
-	gotestsum --format dots -- -bench=. -benchmem ./...
-
-test-nocache: ## Run tests without cache
-	gotestsum --format testdox --format-hide-empty-pkg --packages=all -- -count=1 ./...
-
-test-short: ## Run short tests
-	gotestsum --format short-verbose -- -short ./...
-
-test-timeout: ## Run tests with timeout
-	gotestsum --format testdox -- -timeout 30s ./...
-
-test-failed: ## Watch and run only failed tests
-	gotestsum --format testname --packages=all --watch --watch-fail=running -- ./...
 
 clean:
 	$(GOCMD) clean
