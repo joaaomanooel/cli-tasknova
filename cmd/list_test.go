@@ -6,6 +6,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/joaaomanooel/cli-tasknova/internal/task"
+	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
@@ -18,10 +20,15 @@ type ListCommandTestSuite struct {
 }
 
 func (s *ListCommandTestSuite) SetupTest() {
-	s.tempFile = "temp_tasks_test.json"
-	s.originalDataFile = dataFile
-	dataFile = s.tempFile
+	rootCmd = &cobra.Command{
+		Use:   "tasknova",
+		Short: "A CLI task manager",
+	}
+
 	s.buffer = &bytes.Buffer{}
+
+	dataFile = "temp_tasks_test.json"
+	fileStorage = &task.FileStorage{FilePath: dataFile}
 
 	// Reset and setup root command
 	rootCmd.ResetCommands()
@@ -32,13 +39,12 @@ func (s *ListCommandTestSuite) SetupTest() {
 }
 
 func (s *ListCommandTestSuite) TearDownTest() {
-	os.Remove(s.tempFile)
-	dataFile = s.originalDataFile
+	os.Remove(dataFile)
 }
 
 func (s *ListCommandTestSuite) TestListSingleTask() {
 	// Arrange
-	task := Task{
+	newTask := task.Task{
 		ID:          1,
 		Title:       "Test Task",
 		Description: "This is a test task",
@@ -47,7 +53,7 @@ func (s *ListCommandTestSuite) TestListSingleTask() {
 		UpdatedAt:   time.Now(),
 	}
 
-	err := saveTasks([]Task{task})
+	err := task.Storage.Save(fileStorage, []task.Task{newTask})
 	assert.NoError(s.T(), err, "Failed to save tasks")
 
 	// Act
@@ -71,7 +77,7 @@ func (s *ListCommandTestSuite) TestListSingleTask() {
 
 func (s *ListCommandTestSuite) TestListEmptyTaskList() {
 	// Arrange
-	err := saveTasks([]Task{})
+	err := task.Storage.Save(fileStorage, []task.Task{})
 	assert.NoError(s.T(), err, "Failed to save empty task list")
 
 	// Act
@@ -84,7 +90,7 @@ func (s *ListCommandTestSuite) TestListEmptyTaskList() {
 
 func (s *ListCommandTestSuite) TestListMultipleTasks() {
 	// Arrange
-	tasks := []Task{
+	tasks := []task.Task{
 		{
 			ID:          1,
 			Title:       "First Task",
@@ -103,7 +109,7 @@ func (s *ListCommandTestSuite) TestListMultipleTasks() {
 		},
 	}
 
-	err := saveTasks(tasks)
+	err := task.Storage.Save(fileStorage, tasks)
 	assert.NoError(s.T(), err, "Failed to save tasks")
 
 	// Act
@@ -132,6 +138,7 @@ func (s *ListCommandTestSuite) TestListMultipleTasks() {
 func (s *ListCommandTestSuite) TestListTasksWithInvalidFile() {
 	// Arrange
 	dataFile = "/dev/null/tasks.json" // This path will always be invalid on Unix systems
+	fileStorage = &task.FileStorage{FilePath: dataFile}
 
 	// Create the invalid directory to ensure it exists but is not writable
 	err := os.MkdirAll("/dev/null", 0400)

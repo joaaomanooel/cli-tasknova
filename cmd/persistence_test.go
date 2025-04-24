@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/joaaomanooel/cli-tasknova/internal/task"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
@@ -17,19 +18,16 @@ type PersistenceTestSuite struct {
 }
 
 func (s *PersistenceTestSuite) SetupTest() {
-	s.tempFile = "temp_tasks_test.json"
-	s.originalDataFile = dataFile
-	dataFile = s.tempFile
+	dataFile = "temp_tasks_test.json"
+	fileStorage = &task.FileStorage{FilePath: dataFile}
 }
 
 func (s *PersistenceTestSuite) TearDownTest() {
-	os.Remove(s.tempFile)
-	dataFile = s.originalDataFile
+	os.Remove(dataFile)
 }
 
 func (s *PersistenceTestSuite) TestSaveAndReadTasks() {
-	// Arrange
-	expectedTasks := []Task{
+	expectedTasks := []task.Task{
 		{
 			ID:          1,
 			Title:       "Test Task",
@@ -40,13 +38,11 @@ func (s *PersistenceTestSuite) TestSaveAndReadTasks() {
 		},
 	}
 
-	// Act
-	err := saveTasks(expectedTasks)
+	err := task.Storage.Save(fileStorage, expectedTasks)
 	assert.NoError(s.T(), err, "Should save tasks without error")
 
-	actualTasks, err := readTasks()
+	actualTasks, err := task.Storage.Read(fileStorage)
 
-	// Assert
 	assert.NoError(s.T(), err, "Should read tasks without error")
 
 	expected, err := json.MarshalIndent(expectedTasks, "", "")
@@ -59,21 +55,19 @@ func (s *PersistenceTestSuite) TestSaveAndReadTasks() {
 }
 
 func (s *PersistenceTestSuite) TestReadTasksFromNonExistentFile() {
-	// Arrange
 	dataFile = "non_existent_file.json"
 
-	// Act
-	tasks, err := readTasks()
+	tasks, err := task.Storage.Read(fileStorage)
 
-	// Assert
 	assert.NoError(s.T(), err, "Reading non-existent file should return empty tasks without error")
 	assert.Empty(s.T(), tasks, "Reading non-existent file should return empty tasks slice")
 }
 
 func (s *PersistenceTestSuite) TestSaveTasksToInvalidPath() {
-	// Arrange
 	dataFile = "/invalid/path/tasks.json"
-	tasks := []Task{{
+	fileStorage = &task.FileStorage{FilePath: dataFile}
+
+	tasks := []task.Task{{
 		ID:          1,
 		Title:       "Test Task",
 		Description: "Test invalid path",
@@ -82,10 +76,8 @@ func (s *PersistenceTestSuite) TestSaveTasksToInvalidPath() {
 		UpdatedAt:   time.Now(),
 	}}
 
-	// Act
-	err := saveTasks(tasks)
+	err := task.Storage.Save(fileStorage, tasks)
 
-	// Assert
 	assert.Error(s.T(), err, "Saving to invalid path should return error")
 }
 

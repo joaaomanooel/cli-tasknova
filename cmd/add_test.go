@@ -5,6 +5,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/joaaomanooel/cli-tasknova/internal/task"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -18,32 +19,30 @@ type AddCommandTestSuite struct {
 }
 
 func (s *AddCommandTestSuite) SetupTest() {
-	// Clean up any previous state
 	rootCmd = &cobra.Command{
 		Use:   "tasknova",
 		Short: "A CLI task manager",
 	}
 
-	s.tempFile = "temp_tasks_test.json"
-	s.originalDataFile = dataFile
-	dataFile = s.tempFile
+	dataFile = "temp_tasks_test.json"
+	fileStorage = &task.FileStorage{FilePath: dataFile}
+
 	s.buffer = &bytes.Buffer{}
 
-	// Setup root command
+	rootCmd.ResetCommands()
 	rootCmd.AddCommand(addTaskCmd())
 	rootCmd.SetOut(s.buffer)
 	rootCmd.SetErr(s.buffer)
 }
 
 func (s *AddCommandTestSuite) TearDownTest() {
-	os.Remove(s.tempFile)
-	dataFile = s.originalDataFile
+	os.Remove(dataFile)
 }
 
 func (s *AddCommandTestSuite) TestAddTask() {
 	// Arrange
-	existingTasks := []Task{}
-	err := saveTasks(existingTasks)
+	existingTasks := []task.Task{}
+	err := task.Storage.Save(fileStorage, existingTasks)
 	assert.NoError(s.T(), err)
 
 	rootCmd.SetArgs([]string{
@@ -53,16 +52,13 @@ func (s *AddCommandTestSuite) TestAddTask() {
 		"--priority", "high",
 	})
 
-	// Act
 	err = rootCmd.Execute()
-
-	// Assert
 	assert.NoError(s.T(), err)
 
-	// Verify task was saved
-	tasks, err := readTasks()
+	tasks, err := task.Storage.Read(fileStorage)
 	assert.NoError(s.T(), err)
 	assert.Len(s.T(), tasks, 1)
+
 	newTask := tasks[0]
 	assert.Equal(s.T(), "Test Task", newTask.Title)
 	assert.Equal(s.T(), "Test Description", newTask.Description)
@@ -72,6 +68,7 @@ func (s *AddCommandTestSuite) TestAddTask() {
 
 func (s *AddCommandTestSuite) TestAddTaskWithInvalidFile() {
 	dataFile = "/nonexistent/directory/tasks.json"
+	fileStorage = &task.FileStorage{FilePath: dataFile}
 
 	rootCmd.SetArgs([]string{
 		"add",

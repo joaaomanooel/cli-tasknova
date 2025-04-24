@@ -1,24 +1,15 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
-	"os"
 	"time"
 
+	"github.com/joaaomanooel/cli-tasknova/internal/task"
 	"github.com/spf13/cobra"
 )
 
-type Task struct {
-	ID          uint      `json:"id"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	Priority    string    `json:"priority"`
-	CreatedAt   time.Time `json:"CreatedAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
-}
-
 var dataFile = "tasks.json"
+var fileStorage = &task.FileStorage{FilePath: dataFile}
 
 func addTaskCmd() *cobra.Command {
 	cmd := &cobra.Command{
@@ -39,7 +30,7 @@ func addTaskCmd() *cobra.Command {
 				return fmt.Errorf("title is required")
 			}
 
-			task := Task{
+			newTask := task.Task{
 				ID:          generateID(),
 				Title:       title,
 				Description: description,
@@ -48,14 +39,15 @@ func addTaskCmd() *cobra.Command {
 				UpdatedAt:   time.Now(),
 			}
 
-			tasks, err := readTasks()
+			tasks, err := task.Storage.Read(fileStorage)
+
 			if err != nil {
 				return fmt.Errorf("Error reading tasks file: %v", err)
 			}
 
-			tasks = append(tasks, task)
+			tasks = append(tasks, newTask)
+			err = task.Storage.Save(fileStorage, tasks)
 
-			err = saveTasks(tasks)
 			if err != nil {
 				return fmt.Errorf("Error saving the task: %v", err)
 			}
@@ -80,26 +72,4 @@ func init() {
 
 func generateID() uint {
 	return uint(time.Now().UnixNano() / 1e6)
-}
-
-func readTasks() ([]Task, error) {
-	var tasks []Task
-	if _, err := os.Stat(dataFile); os.IsNotExist(err) {
-		return tasks, nil
-	}
-	bytes, err := os.ReadFile(dataFile)
-	if err != nil {
-		return tasks, err
-	}
-	err = json.Unmarshal(bytes, &tasks)
-	return tasks, err
-}
-
-func saveTasks(tasks []Task) error {
-	bytes, err := json.MarshalIndent(tasks, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	return os.WriteFile(dataFile, bytes, 0644)
 }

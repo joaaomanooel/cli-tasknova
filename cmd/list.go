@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/joaaomanooel/cli-tasknova/internal/task"
 	"github.com/spf13/cobra"
 )
 
@@ -12,7 +13,7 @@ func listTasksCmd() *cobra.Command {
 		Short: "List all tasks and notes",
 		Long:  `Displays all tasks and notes stored in tasks.json file.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			tasks, err := readTasks()
+			tasks, err := task.Storage.Read(fileStorage)
 			if err != nil {
 				return fmt.Errorf("error reading tasks: %v", err)
 			}
