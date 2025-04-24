@@ -1,13 +1,10 @@
-run-version: 1.51.0
+version: "2"
 
 linters:
   enable:
-    - gofmt
-    - goimports
     - govet
     - errcheck
     - staticcheck
-    - gosimple
     - ineffassign
     - unused
     - misspell
