@@ -1,78 +1,101 @@
 # TaskNova CLI
 
-TaskNova is a powerful command-line task management tool built with Go, designed to help you manage your tasks efficiently from the terminal.
+TaskNova is a command-line interface (CLI) task management tool built in Go using the Cobra framework. It helps you manage tasks and notes efficiently through terminal commands.
 
 ## Features
 
-- Add tasks with title, description, and priority levels
-- Tasks are automatically timestamped with creation and update times
+- Create tasks with title, description, and priority
+- List all tasks with formatted output
+- Delete tasks by ID
 - Persistent storage using JSON format
 - Simple and intuitive command-line interface
 
 ## Installation
 
-To install TaskNova, make sure you have Go installed on your system, then run:
-
 ```bash
-go install github.com/yourusername/cli-tasknova@latest
-```
-
-Or clone the repository and build from source:
-
-```bash
-git clone https://github.com/yourusername/cli-tasknova.git
-cd cli-tasknova
-make build
+go install github.com/joaaomanooel/cli-tasknova@latest
 ```
 
 ## Usage
 
-### Adding a Task
+### Add a Task
 
 ```bash
-tasknova add --title "My Task" --description "Task description" --priority high
+tasknova add --title "Task Title" --description "Task Description" --priority "high"
 ```
 
 Options:
-- `--title, -t`: Task title (required)
-- `--description, -d`: Task description (optional)
-- `--priority, -p`: Task priority (optional, default: "low")
+- `-t, --title`: Task title (required)
+- `-d, --description`: Task description (optional)
+- `-p, --priority`: Task priority (optional, default: "low")
+
+### List Tasks
+
+```bash
+tasknova list
+```
+
+This command displays all tasks with their details including:
+- ID
+- Title
+- Description
+- Priority
+- Creation date
+- Last update date
+
+### Delete a Task
+
+```bash
+tasknova delete --id 1234
+```
+
+Options:
+- `-i, --id`: Task ID (required)
 
 ## Development
 
 ### Prerequisites
 
-- Go 1.x or higher
-- Make
+- Go 1.16 or higher
+- Git
 
-### Building
+### Setup
 
+1. Clone the repository
 ```bash
-make build
+git clone https://github.com/joaaomanooel/cli-tasknova.git
 ```
 
-This will create binaries for multiple platforms in the `bin` directory.
-
-### Running Tests
-
+2. Navigate to the project directory
 ```bash
-make test
+cd cli-tasknova
 ```
 
-### Available Make Commands
+3. Install dependencies
+```bash
+go mod download
+```
 
-- `make test`: Run tests with coverage
-- `make build`: Build for all platforms
-- `make build-macos`: Build for macOS
-- `make build-linux`: Build for Linux
-- `make build-windows`: Build for Windows
-- `make test-watch`: Watch for changes and run tests
-- `make test-coverage`: Show test coverage
+4. Build the project
+```bash
+go build
+```
 
-## License
+### Testing
 
-[MIT](LICENSE.md)
+Run the test suite:
+```bash
+go test ./...
+```
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
