@@ -3,6 +3,8 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/joaaomanooel/cli-tasknova/internal/errors"
+	"github.com/joaaomanooel/cli-tasknova/internal/constants"
 	"github.com/joaaomanooel/cli-tasknova/internal/task"
 	"github.com/spf13/cobra"
 )
@@ -14,9 +16,9 @@ func deleteTaskCmd() *cobra.Command {
 		Long:  `Removes the task with the specified ID from the storage file.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			id, _ := cmd.Flags().GetUint("id")
-			tasks, err := task.Storage.Read(fileStorage)
+			tasks, err := task.DefaultStorage.Read()
 			if err != nil {
-				return fmt.Errorf("Error reading tasks: %e", err)
+				return errors.NewTaskError(constants.ReadError, "Failed to read tasks", err)
 			}
 
 			newTasks := []task.Task{}
@@ -31,11 +33,11 @@ func deleteTaskCmd() *cobra.Command {
 			}
 
 			if !found {
-				return fmt.Errorf("Task with ID %d not found. \n", id)
+				return errors.NewTaskError(constants.NotFoundError, fmt.Sprintf("Task with ID %d not found", id), nil)
 			}
 
-			if err := task.Storage.Save(fileStorage, newTasks); err != nil {
-				return fmt.Errorf("Error saving tasks: %e", err)
+			if err := task.DefaultStorage.Save(newTasks); err != nil {
+				return errors.NewTaskError(constants.SaveError, "Failed to save tasks", err)
 			}
 
 			fmt.Println("Task deleted successfully! 🎉")
@@ -50,6 +52,5 @@ func deleteTaskCmd() *cobra.Command {
 }
 
 func init() {
-	deleteTaskCmd()
 	rootCmd.AddCommand(deleteTaskCmd())
 }
