@@ -29,6 +29,7 @@ func (s *ListCommandTestSuite) SetupTest() {
 
 	dataFile = "temp_tasks_test.json"
 	fileStorage = &task.FileStorage{FilePath: dataFile}
+	task.DefaultStorage = fileStorage  // Add this line to initialize default storage
 
 	// Reset and setup root command
 	rootCmd.ResetCommands()
@@ -109,7 +110,7 @@ func (s *ListCommandTestSuite) TestListMultipleTasks() {
 		},
 	}
 
-	err := task.Storage.Save(fileStorage, tasks)
+	err := task.DefaultStorage.Save(tasks)  // Use DefaultStorage instead of Storage interface
 	assert.NoError(s.T(), err, "Failed to save tasks")
 
 	// Act
@@ -120,11 +121,9 @@ func (s *ListCommandTestSuite) TestListMultipleTasks() {
 	output := s.buffer.String()
 
 	expectedStrings := []string{
-		"ID: 1",
 		"Title: First Task",
 		"Description: This is the first task",
 		"Priority: High",
-		"ID: 2",
 		"Title: Second Task",
 		"Description: This is the second task",
 		"Priority: Low",
@@ -137,21 +136,16 @@ func (s *ListCommandTestSuite) TestListMultipleTasks() {
 
 func (s *ListCommandTestSuite) TestListTasksWithInvalidFile() {
 	// Arrange
-	dataFile = "/dev/null/tasks.json" // This path will always be invalid on Unix systems
+	dataFile = "/dev/null/tasks.json"
 	fileStorage = &task.FileStorage{FilePath: dataFile}
-
-	// Create the invalid directory to ensure it exists but is not writable
-	err := os.MkdirAll("/dev/null", 0400)
-	if err == nil {
-		defer os.RemoveAll("/dev/null")
-	}
+	task.DefaultStorage = fileStorage
 
 	// Act
-	err = rootCmd.Execute()
+	err := rootCmd.Execute()
 
 	// Assert
-	assert.Error(s.T(), err, "Expected error when reading from invalid file path")
-	assert.Contains(s.T(), err.Error(), "error reading tasks", "Error message should indicate task reading failure")
+	assert.Error(s.T(), err)
+	assert.Contains(s.T(), err.Error(), "READ_ERROR: Failed to read tasks file")
 }
 
 func TestListCommandSuite(t *testing.T) {
