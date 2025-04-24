@@ -3,6 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -13,17 +14,18 @@ import (
 
 type PersistenceTestSuite struct {
 	suite.Suite
-	tempFile         string
-	originalDataFile string
+	testDir string
 }
 
 func (s *PersistenceTestSuite) SetupTest() {
 	dataFile = "temp_tasks_test.json"
+
 	fileStorage = &task.FileStorage{FilePath: dataFile}
+	task.DefaultStorage = fileStorage
 }
 
 func (s *PersistenceTestSuite) TearDownTest() {
-	os.Remove(dataFile)
+	os.RemoveAll(dataFile)
 }
 
 func (s *PersistenceTestSuite) TestSaveAndReadTasks() {
@@ -38,11 +40,10 @@ func (s *PersistenceTestSuite) TestSaveAndReadTasks() {
 		},
 	}
 
-	err := task.Storage.Save(fileStorage, expectedTasks)
+	err := task.DefaultStorage.Save(expectedTasks)
 	assert.NoError(s.T(), err, "Should save tasks without error")
 
-	actualTasks, err := task.Storage.Read(fileStorage)
-
+	actualTasks, err := task.DefaultStorage.Read()
 	assert.NoError(s.T(), err, "Should read tasks without error")
 
 	expected, err := json.MarshalIndent(expectedTasks, "", "")
@@ -55,17 +56,21 @@ func (s *PersistenceTestSuite) TestSaveAndReadTasks() {
 }
 
 func (s *PersistenceTestSuite) TestReadTasksFromNonExistentFile() {
-	dataFile = "non_existent_file.json"
+	// Use temporary directory for test isolation
+	nonExistentFile := filepath.Join(s.testDir, "non_existent.json")
+	fileStorage = &task.FileStorage{FilePath: nonExistentFile}
+	task.DefaultStorage = fileStorage
 
-	tasks, err := task.Storage.Read(fileStorage)
-
+	tasks, err := task.DefaultStorage.Read()
 	assert.NoError(s.T(), err, "Reading non-existent file should return empty tasks without error")
 	assert.Empty(s.T(), tasks, "Reading non-existent file should return empty tasks slice")
 }
 
 func (s *PersistenceTestSuite) TestSaveTasksToInvalidPath() {
-	dataFile = "/invalid/path/tasks.json"
-	fileStorage = &task.FileStorage{FilePath: dataFile}
+	// Create a deeply nested invalid path
+	invalidPath := filepath.Join(s.testDir, "non", "existent", "path", "tasks.json")
+	fileStorage = &task.FileStorage{FilePath: invalidPath}
+	task.DefaultStorage = fileStorage
 
 	tasks := []task.Task{{
 		ID:          1,
@@ -76,8 +81,7 @@ func (s *PersistenceTestSuite) TestSaveTasksToInvalidPath() {
 		UpdatedAt:   time.Now(),
 	}}
 
-	err := task.Storage.Save(fileStorage, tasks)
-
+	err := task.DefaultStorage.Save(tasks)
 	assert.Error(s.T(), err, "Saving to invalid path should return error")
 }
 

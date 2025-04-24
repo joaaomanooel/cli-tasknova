@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/joaaomanooel/cli-tasknova/internal/constants"
 	"github.com/joaaomanooel/cli-tasknova/internal/errors"
 	"github.com/joaaomanooel/cli-tasknova/internal/task"
-	"github.com/joaaomanooel/cli-tasknova/internal/constants"
 	"github.com/spf13/cobra"
 )
 
@@ -56,7 +56,9 @@ func addTaskCmd() *cobra.Command {
 	cmd.Flags().StringP("title", "t", "", "Title of the task")
 	cmd.Flags().StringP("description", "d", "", "Description of the task")
 	cmd.Flags().StringP("priority", "p", "low", "Priority of the task (low, normal, high)")
-	cmd.MarkFlagRequired("title")
+	if err := cmd.MarkFlagRequired("title"); err != nil {
+		panic(fmt.Sprintf("Failed to mark title flag as required: %v", err))
+	}
 
 	return cmd
 }

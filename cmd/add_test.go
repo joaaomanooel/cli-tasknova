@@ -13,11 +13,8 @@ import (
 
 type AddCommandTestSuite struct {
 	suite.Suite
-	tempFile            string
-	originalDataFile    string
-	buffer              *bytes.Buffer
-	originalFileStorage *task.FileStorage
-	tempFileStorage     *task.FileStorage
+	buffer          *bytes.Buffer
+	tempFileStorage *task.FileStorage
 }
 
 func (s *AddCommandTestSuite) SetupTest() {
@@ -29,7 +26,7 @@ func (s *AddCommandTestSuite) SetupTest() {
 	s.tempFileStorage = fileStorage
 	dataFile = "temp_tasks_test.json"
 	fileStorage = &task.FileStorage{FilePath: dataFile}
-	task.DefaultStorage = fileStorage  // Add this line to initialize default storage
+	task.DefaultStorage = fileStorage // Add this line to initialize default storage
 
 	s.buffer = &bytes.Buffer{}
 
@@ -46,7 +43,7 @@ func (s *AddCommandTestSuite) TearDownTest() {
 func (s *AddCommandTestSuite) TestAddTask() {
 	// Arrange
 	existingTasks := []task.Task{}
-	err := task.DefaultStorage.Save(existingTasks)  // Use DefaultStorage
+	err := task.DefaultStorage.Save(existingTasks) // Use DefaultStorage
 	assert.NoError(s.T(), err)
 
 	rootCmd.SetArgs([]string{
@@ -59,7 +56,7 @@ func (s *AddCommandTestSuite) TestAddTask() {
 	err = rootCmd.Execute()
 	assert.NoError(s.T(), err)
 
-	tasks, err := task.DefaultStorage.Read()  // Use DefaultStorage
+	tasks, err := task.DefaultStorage.Read() // Use DefaultStorage
 	assert.NoError(s.T(), err)
 	assert.NotEmpty(s.T(), tasks, "Tasks should not be empty after adding")
 
@@ -71,24 +68,24 @@ func (s *AddCommandTestSuite) TestAddTask() {
 }
 
 func (s *AddCommandTestSuite) TestAddTaskWithInvalidFile() {
-    // Arrange
-    dataFile = "/dev/null/tasks.json"
-    fileStorage = &task.FileStorage{FilePath: dataFile}
-    task.DefaultStorage = fileStorage
+	// Arrange
+	dataFile = "/dev/null/tasks.json"
+	fileStorage = &task.FileStorage{FilePath: dataFile}
+	task.DefaultStorage = fileStorage
 
-    rootCmd.SetArgs([]string{
-        "add",
-        "--title", "Test Task",
-        "--description", "Test Description",
-        "--priority", "high",
-    })
+	rootCmd.SetArgs([]string{
+		"add",
+		"--title", "Test Task",
+		"--description", "Test Description",
+		"--priority", "high",
+	})
 
-    // Act
-    err := rootCmd.Execute()
+	// Act
+	err := rootCmd.Execute()
 
-    // Assert
-    assert.Error(s.T(), err)
-    assert.Contains(s.T(), err.Error(), "READ_ERROR: Failed to read tasks file")
+	// Assert
+	assert.Error(s.T(), err)
+	assert.Contains(s.T(), err.Error(), "READ_ERROR: Failed to read tasks file")
 }
 
 func (s *AddCommandTestSuite) TestAddTaskWithMissingTitle() {

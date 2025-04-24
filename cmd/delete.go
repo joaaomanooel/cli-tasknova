@@ -3,8 +3,8 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/joaaomanooel/cli-tasknova/internal/errors"
 	"github.com/joaaomanooel/cli-tasknova/internal/constants"
+	"github.com/joaaomanooel/cli-tasknova/internal/errors"
 	"github.com/joaaomanooel/cli-tasknova/internal/task"
 	"github.com/spf13/cobra"
 )
@@ -46,7 +46,9 @@ func deleteTaskCmd() *cobra.Command {
 	}
 
 	cmd.Flags().UintP("id", "i", 0, "ID of the task to delete")
-	cmd.MarkFlagRequired("id")
+	if err := cmd.MarkFlagRequired("id"); err != nil {
+		panic(fmt.Sprintf("Failed to mark id flag as required: %v", err))
+	}
 
 	return cmd
 }

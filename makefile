@@ -72,3 +72,12 @@ release: build
 	@echo "Release binaries created in $(BIN_DIR) directory"
 
 .PHONY: all build test test-coverage test-watch test-verbose test-race test-bench test-nocache test-short test-timeout test-failed clean run deps tidy build-macos build-macos-arm64 build-linux build-windows release
+
+
+.PHONY: lint
+lint:
+	golangci-lint run
+
+.PHONY: lint-fix
+lint-fix:
+	golangci-lint run --fix

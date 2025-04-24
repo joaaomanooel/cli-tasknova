@@ -14,9 +14,7 @@ import (
 
 type ListCommandTestSuite struct {
 	suite.Suite
-	tempFile         string
-	originalDataFile string
-	buffer           *bytes.Buffer
+	buffer *bytes.Buffer
 }
 
 func (s *ListCommandTestSuite) SetupTest() {
@@ -29,7 +27,7 @@ func (s *ListCommandTestSuite) SetupTest() {
 
 	dataFile = "temp_tasks_test.json"
 	fileStorage = &task.FileStorage{FilePath: dataFile}
-	task.DefaultStorage = fileStorage  // Add this line to initialize default storage
+	task.DefaultStorage = fileStorage // Add this line to initialize default storage
 
 	// Reset and setup root command
 	rootCmd.ResetCommands()
@@ -110,7 +108,7 @@ func (s *ListCommandTestSuite) TestListMultipleTasks() {
 		},
 	}
 
-	err := task.DefaultStorage.Save(tasks)  // Use DefaultStorage instead of Storage interface
+	err := task.DefaultStorage.Save(tasks) // Use DefaultStorage instead of Storage interface
 	assert.NoError(s.T(), err, "Failed to save tasks")
 
 	// Act

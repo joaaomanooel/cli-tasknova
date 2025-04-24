@@ -1,6 +1,6 @@
 package task
 
 var (
-    DefaultIDGenerator IDGenerator = &TimeBasedIDGenerator{}
-    DefaultStorage Storage = nil
+	DefaultIDGenerator IDGenerator = &TimeBasedIDGenerator{}
+	DefaultStorage     Storage
 )

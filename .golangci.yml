@@ -1,0 +1,39 @@
+run-version: 1.51.0
+
+linters:
+  enable:
+    - gofmt
+    - goimports
+    - govet
+    - errcheck
+    - staticcheck
+    - gosimple
+    - ineffassign
+    - unused
+    - misspell
+    - revive
+    - bodyclose
+    - gocritic
+    - gosec
+    - prealloc
+
+run:
+  go: '1.20'
+  allow-parallel-runners: true
+  tests: true
+
+issues:
+  new: true
+  new-from-rev: HEAD
+  uniq-by-line: true
+
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports
+    - golines
+
+output:
+  path-prefix: ""

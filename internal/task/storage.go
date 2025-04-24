@@ -3,9 +3,10 @@ package task
 import (
 	"encoding/json"
 	"os"
+	"path/filepath"
 
+	"github.com/joaaomanooel/cli-tasknova/internal/constants"
 	"github.com/joaaomanooel/cli-tasknova/internal/errors"
-	"github.com/joaaomanooel/cli-tasknova/internal/storage"
 )
 
 type FileStorage struct {
@@ -18,24 +19,22 @@ type Storage interface {
 }
 
 func (fs *FileStorage) Save(tasks []Task) error {
-	// Ensure storage directory exists
-	if err := storage.EnsureStorageDirectory(fs.FilePath); err != nil {
-		return errors.NewTaskError("STORAGE_DIR_ERROR", "Failed to create storage directory", err)
+	dir := filepath.Dir(fs.FilePath)
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		return errors.NewTaskError(constants.WriteError, "Directory does not exist", err)
 	}
 
-	// Marshal tasks with indentation for better readability
 	data, err := json.MarshalIndent(tasks, "", "  ")
 	if err != nil {
-		return errors.NewTaskError("MARSHAL_ERROR", "Failed to marshal tasks", err)
+		return errors.NewTaskError(constants.MarshalError, "Failed to marshal tasks", err)
 	}
 
-	// Write file with proper permissions
-	err = os.WriteFile(fs.FilePath, data, storage.DefaultFileMode)
-	if err != nil {
-		return errors.NewTaskError("WRITE_ERROR", "Failed to write tasks file", err)
+	// Use more restrictive file permissions (0600)
+	if err := os.WriteFile(fs.FilePath, data, 0600); err != nil {
+		return errors.NewTaskError(constants.WriteError, "Failed to write tasks file", err)
 	}
 
-	return storage.EnsureFilePermissions(fs.FilePath)
+	return nil
 }
 
 func (fs *FileStorage) Read() ([]Task, error) {
@@ -44,12 +43,12 @@ func (fs *FileStorage) Read() ([]Task, error) {
 		return []Task{}, nil
 	}
 	if err != nil {
-		return nil, errors.NewTaskError("READ_ERROR", "Failed to read tasks file", err)
+		return nil, errors.NewTaskError(constants.ReadError, "Failed to read tasks file", err)
 	}
 
 	var tasks []Task
 	if err := json.Unmarshal(data, &tasks); err != nil {
-		return nil, errors.NewTaskError("UNMARSHAL_ERROR", "Failed to parse tasks data", err)
+		return nil, errors.NewTaskError(constants.UnmarshalError, "Failed to parse tasks data", err)
 	}
 
 	return tasks, nil

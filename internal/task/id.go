@@ -1,26 +1,39 @@
 package task
 
 import (
-    "crypto/rand"
-    "encoding/binary"
-    "time"
+	"encoding/binary"
+	"time"
 )
 
 type IDGenerator interface {
-    GenerateID() uint
+	GenerateID() uint
 }
 
 type TimeBasedIDGenerator struct{}
 
+// func (g *TimeBasedIDGenerator) GenerateID() uint {
+// 	now := time.Now()
+
+// 	seconds := int32(now.Unix())
+// 	nanos := int32(now.Nanosecond())
+
+// 	randBytes := make([]byte, 4)
+// 	if _, err := rand.Read(randBytes); err != nil {
+// 		timeComponent := (uint(seconds&0xFFFF) | uint((nanos&0xFFFF)<<16))
+// 		return timeComponent
+// 	}
+
+// 	random := binary.BigEndian.Uint32(randBytes)
+
+// 	timeComponent := uint(seconds&0xFFFF) | uint((nanos&0xFFFF)<<16)
+// 	return timeComponent ^ uint(random)
+// }
+
 func (g *TimeBasedIDGenerator) GenerateID() uint {
-    // Combine timestamp with random bytes for uniqueness
-    timestamp := uint(time.Now().UnixNano())
-    
-    // Generate 4 random bytes
-    randBytes := make([]byte, 4)
-    rand.Read(randBytes)
-    random := binary.BigEndian.Uint32(randBytes)
-    
-    // Combine timestamp and random number
-    return timestamp ^ uint(random)
+	timestamp := uint(time.Now().UnixNano())
+
+	randBytes := make([]byte, 4)
+	random := binary.BigEndian.Uint32(randBytes)
+
+	return timestamp ^ uint(random)
 }

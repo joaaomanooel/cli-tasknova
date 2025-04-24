@@ -58,6 +58,14 @@ Options:
 
 - Go 1.16 or higher
 - Git
+- golangci-lint (for code linting)
+
+### Code Quality
+
+Run the linter:
+```bash
+make lint
+```
 
 ### Setup
 
