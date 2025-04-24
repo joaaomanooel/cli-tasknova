@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 	"testing"
 
@@ -8,12 +9,30 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestExecute(t *testing.T) {
-	dataFile = "temp_tasks_test.json"
+func TestMain(m *testing.M) {
+	dataFile = testDataFile
 	fileStorage = &task.FileStorage{FilePath: dataFile}
 	task.DefaultStorage = fileStorage
 
-	defer os.Remove(dataFile)
+	defer func() {
+		if err := os.Remove(dataFile); err != nil {
+			fmt.Printf("Failed to remove test file: %v\n", err)
+		}
+	}()
+
+	os.Exit(m.Run())
+}
+
+func TestExecute(t *testing.T) {
+	dataFile = testDataFile
+	fileStorage = &task.FileStorage{FilePath: dataFile}
+	task.DefaultStorage = fileStorage
+
+	defer func() {
+		if err := os.Remove(dataFile); err != nil {
+			fmt.Printf("Failed to remove test file: %v\n", err)
+		}
+	}()
 
 	err := rootCmd.Execute()
 

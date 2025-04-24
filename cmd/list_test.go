@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -25,7 +26,7 @@ func (s *ListCommandTestSuite) SetupTest() {
 
 	s.buffer = &bytes.Buffer{}
 
-	dataFile = "temp_tasks_test.json"
+	dataFile = testDataFile
 	fileStorage = &task.FileStorage{FilePath: dataFile}
 	task.DefaultStorage = fileStorage // Add this line to initialize default storage
 
@@ -38,7 +39,9 @@ func (s *ListCommandTestSuite) SetupTest() {
 }
 
 func (s *ListCommandTestSuite) TearDownTest() {
-	os.Remove(dataFile)
+	if err := os.Remove(dataFile); err != nil {
+		fmt.Printf("Failed to remove test file: %v\n", err)
+	}
 }
 
 func (s *ListCommandTestSuite) TestListSingleTask() {

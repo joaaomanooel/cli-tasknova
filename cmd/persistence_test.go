@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -18,14 +19,16 @@ type PersistenceTestSuite struct {
 }
 
 func (s *PersistenceTestSuite) SetupTest() {
-	dataFile = "temp_tasks_test.json"
+	dataFile = testDataFile
 
 	fileStorage = &task.FileStorage{FilePath: dataFile}
 	task.DefaultStorage = fileStorage
 }
 
 func (s *PersistenceTestSuite) TearDownTest() {
-	os.RemoveAll(dataFile)
+	if err := os.RemoveAll(s.testDir); err != nil {
+		fmt.Printf("Failed to remove test file: %v\n", err)
+	}
 }
 
 func (s *PersistenceTestSuite) TestSaveAndReadTasks() {
