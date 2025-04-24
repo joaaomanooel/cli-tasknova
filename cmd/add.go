@@ -4,12 +4,16 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/joaaomanooel/cli-tasknova/internal/errors"
 	"github.com/joaaomanooel/cli-tasknova/internal/task"
+	"github.com/joaaomanooel/cli-tasknova/internal/constants"
 	"github.com/spf13/cobra"
 )
 
-var dataFile = "tasks.json"
-var fileStorage = &task.FileStorage{FilePath: dataFile}
+var (
+	dataFile    = "tasks.json"
+	fileStorage = &task.FileStorage{FilePath: dataFile}
+)
 
 func addTaskCmd() *cobra.Command {
 	cmd := &cobra.Command{
@@ -21,17 +25,17 @@ func addTaskCmd() *cobra.Command {
 			description, _ := cmd.Flags().GetString("description")
 			priority, _ := cmd.Flags().GetString("priority")
 
-			fmt.Println("Title:", title)
-			fmt.Println("Description:", description)
-			fmt.Println("Priority:", priority)
-			fmt.Println("Created At:", time.Now().Format("2006-01-02 15:04:05"))
-
 			if title == "" {
-				return fmt.Errorf("title is required")
+				return errors.NewTaskError(constants.ValidationError, "title is required", nil)
+			}
+
+			tasks, err := task.DefaultStorage.Read()
+			if err != nil {
+				return errors.NewTaskError(constants.ReadError, "Failed to read tasks", err)
 			}
 
 			newTask := task.Task{
-				ID:          generateID(),
+				ID:          task.DefaultIDGenerator.GenerateID(),
 				Title:       title,
 				Description: description,
 				Priority:    priority,
@@ -39,17 +43,9 @@ func addTaskCmd() *cobra.Command {
 				UpdatedAt:   time.Now(),
 			}
 
-			tasks, err := task.Storage.Read(fileStorage)
-
-			if err != nil {
-				return fmt.Errorf("Error reading tasks file: %v", err)
-			}
-
 			tasks = append(tasks, newTask)
-			err = task.Storage.Save(fileStorage, tasks)
-
-			if err != nil {
-				return fmt.Errorf("Error saving the task: %v", err)
+			if err := task.DefaultStorage.Save(tasks); err != nil {
+				return errors.NewTaskError(constants.SaveError, "Failed to save task", err)
 			}
 
 			fmt.Println("Task added successfully! 🎉")
@@ -66,10 +62,6 @@ func addTaskCmd() *cobra.Command {
 }
 
 func init() {
-	addTaskCmd()
+	task.DefaultStorage = fileStorage
 	rootCmd.AddCommand(addTaskCmd())
-}
-
-func generateID() uint {
-	return uint(time.Now().UnixNano() / 1e6)
 }
