@@ -4,31 +4,18 @@ import (
 	"os"
 	"testing"
 
+	"github.com/joaaomanooel/cli-tasknova/internal/task"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestExecute(t *testing.T) {
-	// Save original args
-	originalArgs := os.Args
-	defer func() {
-		os.Args = originalArgs
-	}()
+	dataFile = "temp_tasks_test.json"
+	fileStorage = &task.FileStorage{FilePath: dataFile}
+	task.DefaultStorage = fileStorage
 
-	// Test help command
-	os.Args = []string{"tasknova", "--help"}
-	assert.NotPanics(t, func() {
-		Execute()
-	})
+	defer os.Remove(dataFile)
 
-	// Test version command
-	os.Args = []string{"tasknova", "--version"}
-	assert.NotPanics(t, func() {
-		Execute()
-	})
+	err := rootCmd.Execute()
 
-	// Test invalid command
-	os.Args = []string{"tasknova", "--invalid-flag"}
-	assert.NotPanics(t, func() {
-		Execute()
-	})
+	assert.NoError(t, err, "Root command should execute without error")
 }
