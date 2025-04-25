@@ -12,6 +12,8 @@ BIN_DIR=./bin
 MACOS_BIN=$(BIN_DIR)/$(BINARY_NAME)-darwin
 LINUX_BIN=$(BIN_DIR)/$(BINARY_NAME)-linux
 WINDOWS_BIN=$(BIN_DIR)/$(BINARY_NAME)-windows.exe
+MACOS_BIN_ARM64=$(BIN_DIR)/$(BINARY_NAME)-darwin-arm64
+RUN_BIN=$(BIN_DIR)/$(BINARY_NAME)
 
 all: test build
 
@@ -37,8 +39,8 @@ clean:
 	rm -rf $(BIN_DIR)
 
 run:
-	$(GOBUILD) -o $(BINARY_NAME) -v
-	./$(BINARY_NAME)
+	$(GOBUILD) -o $(RUN_BIN) -v
+	./$(RUN_BIN)
 
 deps:
 	$(GOMOD) download
@@ -56,7 +58,7 @@ build-macos: $(BIN_DIR)
 	@echo "Built for macOS (amd64): $(MACOS_BIN)"
 
 build-macos-arm64: $(BIN_DIR)
-	GOOS=darwin GOARCH=arm64 $(GOBUILD) -o $(BIN_DIR)/$(BINARY_NAME)-darwin-arm64 $(MAIN_PACKAGE)
+	GOOS=darwin GOARCH=arm64 $(GOBUILD) -o $(MACOS_BIN_ARM64) $(MAIN_PACKAGE)
 	@echo "Built for macOS (arm64): $(BIN_DIR)/$(BINARY_NAME)-darwin-arm64"
 
 build-linux: $(BIN_DIR)
