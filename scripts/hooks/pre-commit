@@ -3,7 +3,7 @@
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
 echo "Running pre-commit checks..."
 
@@ -14,5 +14,5 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-echo -e "${GREEN}✅ All commit checks passed!${NC}"
+echo -e "${GREEN}✅ All pre-commit checks passed!${NC}"
 exit 0
