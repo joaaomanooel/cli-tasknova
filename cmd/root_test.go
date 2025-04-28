@@ -22,9 +22,9 @@ func (s *RootCommandTestSuite) SetupTest() {
 	dataFile = testDataFile
 	s.tempFileStorage = &task.FileStorage{FilePath: dataFile}
 	task.DefaultStorage = s.tempFileStorage
-	
+
 	s.buffer = &bytes.Buffer{}
-	
+
 	rootCmd.ResetCommands()
 	rootCmd.SetOut(s.buffer)
 	rootCmd.SetErr(s.buffer)
