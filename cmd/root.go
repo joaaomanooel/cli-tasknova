@@ -4,7 +4,13 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/joaaomanooel/cli-tasknova/internal/task"
 	"github.com/spf13/cobra"
+)
+
+var (
+	dataFile    = "tasks.json"
+	fileStorage = &task.FileStorage{FilePath: dataFile}
 )
 
 var rootCmd = &cobra.Command{
