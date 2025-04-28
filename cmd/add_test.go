@@ -27,7 +27,7 @@ func (s *AddCommandTestSuite) SetupTest() {
 	s.tempFileStorage = fileStorage
 	dataFile = testDataFile
 	fileStorage = &task.FileStorage{FilePath: dataFile}
-	task.DefaultStorage = fileStorage // Add this line to initialize default storage
+	task.DefaultStorage = fileStorage
 
 	s.buffer = &bytes.Buffer{}
 
@@ -44,7 +44,7 @@ func (s *AddCommandTestSuite) TearDownTest() {
 }
 
 func (s *AddCommandTestSuite) TestAddTask() {
-	// Arrange
+
 	existingTasks := []task.Task{}
 	err := task.DefaultStorage.Save(existingTasks) // Use DefaultStorage
 	assert.NoError(s.T(), err)
@@ -71,8 +71,7 @@ func (s *AddCommandTestSuite) TestAddTask() {
 }
 
 func (s *AddCommandTestSuite) TestAddTaskWithInvalidFile() {
-	// Arrange
-	dataFile = "/dev/null/tasks.json"
+	dataFile = "./add/invalid/path/tasks.json"
 	fileStorage = &task.FileStorage{FilePath: dataFile}
 	task.DefaultStorage = fileStorage
 
@@ -83,12 +82,10 @@ func (s *AddCommandTestSuite) TestAddTaskWithInvalidFile() {
 		"--priority", "high",
 	})
 
-	// Act
 	err := rootCmd.Execute()
 
-	// Assert
 	assert.Error(s.T(), err)
-	assert.Contains(s.T(), err.Error(), "READ_ERROR: Failed to read tasks file")
+	assert.Contains(s.T(), err.Error(), "WRITE_ERROR: Directory does not exist")
 }
 
 func (s *AddCommandTestSuite) TestAddTaskWithMissingTitle() {
@@ -102,6 +99,15 @@ func (s *AddCommandTestSuite) TestAddTaskWithMissingTitle() {
 
 	assert.Error(s.T(), err)
 	assert.EqualError(s.T(), err, "required flag(s) \"title\" not set")
+}
+
+func (s *AddCommandTestSuite) TestAddTaskWithEmptyTitle() {
+	cmd := addTaskCmd()
+	cmd.SetArgs([]string{"--title", ""})
+
+	err := cmd.Execute()
+	assert.Error(s.T(), err)
+	assert.Contains(s.T(), err.Error(), "title is required")
 }
 
 func TestAddCommandSuite(t *testing.T) {

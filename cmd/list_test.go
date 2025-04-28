@@ -45,7 +45,7 @@ func (s *ListCommandTestSuite) TearDownTest() {
 }
 
 func (s *ListCommandTestSuite) TestListSingleTask() {
-	// Arrange
+
 	newTask := task.Task{
 		ID:          1,
 		Title:       "Test Task",
@@ -58,10 +58,8 @@ func (s *ListCommandTestSuite) TestListSingleTask() {
 	err := task.Storage.Save(fileStorage, []task.Task{newTask})
 	assert.NoError(s.T(), err, "Failed to save tasks")
 
-	// Act
 	err = rootCmd.Execute()
 
-	// Assert
 	assert.NoError(s.T(), err)
 	output := s.buffer.String()
 
@@ -78,20 +76,18 @@ func (s *ListCommandTestSuite) TestListSingleTask() {
 }
 
 func (s *ListCommandTestSuite) TestListEmptyTaskList() {
-	// Arrange
+
 	err := task.Storage.Save(fileStorage, []task.Task{})
 	assert.NoError(s.T(), err, "Failed to save empty task list")
 
-	// Act
 	err = rootCmd.Execute()
 
-	// Assert
 	assert.NoError(s.T(), err)
 	assert.Contains(s.T(), s.buffer.String(), "No tasks found")
 }
 
 func (s *ListCommandTestSuite) TestListMultipleTasks() {
-	// Arrange
+
 	tasks := []task.Task{
 		{
 			ID:          1,
@@ -114,10 +110,8 @@ func (s *ListCommandTestSuite) TestListMultipleTasks() {
 	err := task.DefaultStorage.Save(tasks) // Use DefaultStorage instead of Storage interface
 	assert.NoError(s.T(), err, "Failed to save tasks")
 
-	// Act
 	err = rootCmd.Execute()
 
-	// Assert
 	assert.NoError(s.T(), err)
 	output := s.buffer.String()
 
@@ -136,17 +130,23 @@ func (s *ListCommandTestSuite) TestListMultipleTasks() {
 }
 
 func (s *ListCommandTestSuite) TestListTasksWithInvalidFile() {
-	// Arrange
-	dataFile = "/dev/null/tasks.json"
-	fileStorage = &task.FileStorage{FilePath: dataFile}
+	// Save the original storage
+	originalStorage := task.DefaultStorage
+	defer func() {
+		task.DefaultStorage = originalStorage
+	}()
+
+	// Use a non-existent directory path
+	invalidPath := "./list/invalid/path/tasks.json"
+	dataFile = invalidPath
+	fileStorage = &task.FileStorage{FilePath: invalidPath}
 	task.DefaultStorage = fileStorage
 
-	// Act
+	rootCmd.SetArgs([]string{"list"})
 	err := rootCmd.Execute()
 
-	// Assert
 	assert.Error(s.T(), err)
-	assert.Contains(s.T(), err.Error(), "READ_ERROR: Failed to read tasks file")
+	assert.Contains(s.T(), err.Error(), "WRITE_ERROR: Directory does not exist")
 }
 
 func TestListCommandSuite(t *testing.T) {

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -14,7 +15,8 @@ import (
 
 type DeleteCommandTestSuite struct {
 	suite.Suite
-	buffer *bytes.Buffer
+	buffer          *bytes.Buffer
+	tempFileStorage *task.FileStorage
 }
 
 func (s *DeleteCommandTestSuite) SetupTest() {
@@ -23,7 +25,8 @@ func (s *DeleteCommandTestSuite) SetupTest() {
 		Short: "A CLI task manager",
 	}
 
-	dataFile = "temp_tasks_test.json"
+	s.tempFileStorage = fileStorage
+	dataFile = testDataFile
 	fileStorage = &task.FileStorage{FilePath: dataFile}
 	task.DefaultStorage = fileStorage
 
@@ -36,7 +39,9 @@ func (s *DeleteCommandTestSuite) SetupTest() {
 }
 
 func (s *DeleteCommandTestSuite) TearDownTest() {
-	os.Remove(dataFile)
+	if err := os.Remove(dataFile); err != nil {
+		fmt.Printf("Failed to remove test file: %v\n", err)
+	}
 }
 
 func (s *DeleteCommandTestSuite) TestDeleteTask() {
@@ -57,16 +62,15 @@ func (s *DeleteCommandTestSuite) TestDeleteTask() {
 }
 
 func (s *DeleteCommandTestSuite) TestDeleteTaskWithInvalidFile() {
-	dataFile = "/dev/null/tasks.json"
+	dataFile = "./delete/invalid/path/tasks.json"
 	fileStorage = &task.FileStorage{FilePath: dataFile}
 	task.DefaultStorage = fileStorage
 
 	rootCmd.SetArgs([]string{"delete", "--id", "1"})
-
 	err := rootCmd.Execute()
 
 	assert.Error(s.T(), err)
-	assert.Contains(s.T(), err.Error(), "READ_ERROR: Failed to read tasks file")
+	assert.Contains(s.T(), err.Error(), "WRITE_ERROR: Directory does not exist")
 }
 
 func (s *DeleteCommandTestSuite) TestDeleteTaskWithInvalidID() {
