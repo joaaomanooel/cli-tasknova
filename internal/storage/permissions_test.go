@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -16,11 +17,12 @@ type PermissionsTestSuite struct {
 
 func (s *PermissionsTestSuite) SetupTest() {
 	s.tempDir = filepath.Join(os.TempDir(), "tasknova_test")
-	os.RemoveAll(s.tempDir)
 }
 
 func (s *PermissionsTestSuite) TearDownTest() {
-	os.RemoveAll(s.tempDir)
+	if err := os.Remove(s.tempDir); err != nil {
+		fmt.Printf("Failed to remove test file: %v\n", err)
+	}
 }
 
 func (s *PermissionsTestSuite) TestEnsureStorageDirectory() {

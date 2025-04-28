@@ -5,51 +5,70 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 )
 
-func TestTaskError_Error(t *testing.T) {
-	testCases := []struct {
-		name     string
-		taskErr  *TaskError
-		expected string
-	}{
-		{
-			name: "with underlying error",
-			taskErr: &TaskError{
-				Code:    "TEST_ERROR",
-				Message: "test message",
-				Err:     errors.New("underlying error"),
-			},
-			expected: "TEST_ERROR: test message (underlying error)",
-		},
-		{
-			name: "without underlying error",
-			taskErr: &TaskError{
-				Code:    "TEST_ERROR",
-				Message: "test message",
-				Err:     nil,
-			},
-			expected: "TEST_ERROR: test message",
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			result := tc.taskErr.Error()
-
-			assert.Equal(t, tc.expected, result)
-		})
-	}
+type TaskErrorTestSuite struct {
+	suite.Suite
+	baseError error
 }
 
-func TestNewTaskError(t *testing.T) {
+func (s *TaskErrorTestSuite) SetupTest() {
+	s.baseError = errors.New("underlying error")
+}
+
+func (s *TaskErrorTestSuite) TestErrorWithUnderlyingError() {
+
+	taskErr := &TaskError{
+		Code:    "TEST_ERROR",
+		Message: "test message",
+		Err:     s.baseError,
+	}
+	expected := "TEST_ERROR: test message (underlying error)"
+
+	result := taskErr.Error()
+
+	assert.Equal(s.T(), expected, result)
+}
+
+func (s *TaskErrorTestSuite) TestErrorWithoutUnderlyingError() {
+
+	taskErr := &TaskError{
+		Code:    "TEST_ERROR",
+		Message: "test message",
+		Err:     nil,
+	}
+	expected := "TEST_ERROR: test message"
+
+	result := taskErr.Error()
+
+	assert.Equal(s.T(), expected, result)
+}
+
+func (s *TaskErrorTestSuite) TestNewTaskErrorCreation() {
+
 	code := "TEST_ERROR"
 	message := "test message"
-	err := errors.New("underlying error")
 
-	taskErr := NewTaskError(code, message, err)
+	taskErr := NewTaskError(code, message, s.baseError)
 
-	assert.Equal(t, code, taskErr.Code)
-	assert.Equal(t, message, taskErr.Message)
-	assert.Equal(t, err, taskErr.Err)
+	assert.Equal(s.T(), code, taskErr.Code)
+	assert.Equal(s.T(), message, taskErr.Message)
+	assert.Equal(s.T(), s.baseError, taskErr.Err)
+}
+
+func (s *TaskErrorTestSuite) TestNewTaskErrorWithNilError() {
+
+	code := "TEST_ERROR"
+	message := "test message"
+
+	taskErr := NewTaskError(code, message, nil)
+
+	assert.Equal(s.T(), code, taskErr.Code)
+	assert.Equal(s.T(), message, taskErr.Message)
+	assert.Nil(s.T(), taskErr.Err)
+}
+
+func TestTaskErrorSuite(t *testing.T) {
+	suite.Run(t, new(TaskErrorTestSuite))
 }
