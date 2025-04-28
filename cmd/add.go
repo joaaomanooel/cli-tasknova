@@ -10,11 +10,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	dataFile    = "tasks.json"
-	fileStorage = &task.FileStorage{FilePath: dataFile}
-)
-
 func addTaskCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add",
