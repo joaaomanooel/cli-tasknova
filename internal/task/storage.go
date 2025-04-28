@@ -18,10 +18,18 @@ type Storage interface {
 	Read() ([]Task, error)
 }
 
-func (fs *FileStorage) Save(tasks []Task) error {
+func (fs *FileStorage) directoryExists() error {
 	dir := filepath.Dir(fs.FilePath)
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		return errors.NewTaskError(constants.WriteError, "Directory does not exist", err)
+	}
+
+	return nil
+}
+
+func (fs *FileStorage) Save(tasks []Task) error {
+	if err := fs.directoryExists(); err != nil {
+		return err
 	}
 
 	data, err := json.MarshalIndent(tasks, "", "  ")
@@ -38,6 +46,10 @@ func (fs *FileStorage) Save(tasks []Task) error {
 }
 
 func (fs *FileStorage) Read() ([]Task, error) {
+	if err := fs.directoryExists(); err != nil {
+		return nil, err
+	}
+
 	data, err := os.ReadFile(fs.FilePath)
 	if os.IsNotExist(err) {
 		return []Task{}, nil
