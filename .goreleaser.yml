@@ -1,0 +1,42 @@
+project_name: tasknova
+
+builds:
+  - binary: tasknova
+    main: ./main.go
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - format: tar.gz
+    replacements:
+      darwin: macOS
+    files:
+      - docs/man/*
+
+brews:
+  - name: tasknova
+    tap:
+      owner: joaaomanooel
+      name: tap
+    homepage: https://github.com/joaaomanooel/cli-tasknova
+    draft: false
+
+scoops:
+  - name: tasknova
+    directory: bucket
+    homepage: https://github.com/joaaomanooel/cli-tasknova
+    description: "TaskNova CLI for managing tasks and notes"
+    version: "{{ .Version }}"
+    url_template: "https://github.com/joaaomanooel/cli-tasknova/releases/download/{{ .Tag }}/tasknova_{{ .Version }}_{{ .Os }}_{{ .Arch }}.zip"
+    bin: "tasknova.exe"
+
+changelog:
+  sort: asc
+
+snapshot:
+  name_template: "{{ .Tag }}-{{ .ShortCommit }}"
