@@ -44,7 +44,6 @@ func (s *AddCommandTestSuite) TearDownTest() {
 }
 
 func (s *AddCommandTestSuite) TestAddTask() {
-
 	existingTasks := []task.Task{}
 	err := task.DefaultStorage.Save(existingTasks) // Use DefaultStorage
 	assert.NoError(s.T(), err)
