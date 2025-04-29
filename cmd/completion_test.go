@@ -37,6 +37,14 @@ func (s *CompletionCommandTestSuite) TestCompletionNoArgs() {
 	assert.Contains(s.T(), s.buffer.String(), "completion")
 }
 
+func (s *CompletionCommandTestSuite) TestCompletionInvalidArgs() {
+	rootCmd.SetArgs([]string{"completion", "test"})
+
+	err := rootCmd.Execute()
+
+	assert.ErrorContains(s.T(), err, "invalid shell type")
+}
+
 func (s *CompletionCommandTestSuite) TestCompletionBash() {
 	rootCmd.SetArgs([]string{"completion", "bash"})
 
