@@ -30,7 +30,25 @@ Your terminal's secret weapon for task mastery & flow
 ## Installation
 
 ```bash
+# Via Go
 go install github.com/joaaomanooel/cli-tasknova@latest
+```
+
+```bash
+# Via Homebrew
+brew install joaaomanooel/tap/tasknova
+```
+
+```bash
+# Via Scoop
+scoop bucket add tasknova https://github.com/joaaomanooel/scoop-bucket.git
+scoop install tasknova
+```
+
+Install the man page:
+```bash
+cp docs/man/tasknova.1 /usr/local/share/man/man1/
+man tasknova
 ```
 
 ## Usage
