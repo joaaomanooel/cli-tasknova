@@ -28,11 +28,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
-      - name: Install golangci-lint
-        uses: golangci/golangci-lint-action@v3
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v7
         with:
-          version: 'v2.2.0'
-          args: --out-format=colored-line-number
+          version: v2.1.1
 
       - name: Run tests and check coverage
         run: make coverage
