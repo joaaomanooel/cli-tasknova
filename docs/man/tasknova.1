@@ -1,0 +1,76 @@
+.nh
+.TH TASKNOVA(1) TaskNova CLI
+João Manoel
+January 2024
+
+.SH NAME
+tasknova \- A CLI task manager
+
+
+.SH SYNOPSIS
+\fBtasknova\fP [\fIcommand\fP] [\fIflags\fP]
+
+
+.SH DESCRIPTION
+TaskNova is a command-line task manager that helps you organize tasks with priorities and descriptions.
+
+
+.SH COMMANDS
+.TP
+\fBadd\fP
+Add a new task with title, description, and priority.
+
+.TP
+\fBlist\fP
+List all tasks in a formatted table.
+
+.TP
+\fBupdate\fP
+Update an existing task by ID.
+
+.TP
+\fBdelete\fP
+Delete a task by ID.
+
+.TP
+\fBcompletion\fP
+Generate shell completion scripts.
+
+
+.SH OPTIONS
+.TP
+\fB--help\fP
+Show help message and exit.
+
+.TP
+\fB--version\fP
+Show program's version number and exit.
+
+
+.SH EXAMPLES
+.TP
+\fBtasknova add --title "Learn Go" --description "Start with basics" --priority high\fP
+Add a new high-priority task.
+
+.TP
+\fBtasknova list\fP
+List all tasks.
+
+.TP
+\fBtasknova update --id 1 --title "New Title"\fP
+Update task title.
+
+.TP
+\fBtasknova delete --id 1\fP
+Delete a task.
+
+
+.SH FILES
+.TP
+~/.tasknova/tasks.json
+Tasks storage file
+
+
+.SH SEE ALSO
+Full documentation at: 
+\[la]https://github.com/joaaomanooel/cli\-tasknova\[ra]
