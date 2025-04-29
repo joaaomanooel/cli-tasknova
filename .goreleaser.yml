@@ -24,7 +24,7 @@ archives:
       - docs/man/*
 
 brews:
-  - name: joaaomanooel-tasknova
+  - name: tasknova
     repository:
       owner: joaaomanooel
       name: tap
@@ -32,7 +32,7 @@ brews:
     skip_upload: false
 
 scoops:
-  - name: joaaomanooel-tasknova
+  - name: tasknova
     repository:
       owner: joaaomanooel
       name: bucket
