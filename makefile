@@ -23,20 +23,29 @@ build: clean build-macos build-macos-arm64 build-linux build-windows
 test:
 	gotestsum --format testdox --hide-summary output --format-hide-empty-pkg --packages=all -- -v ./... -coverprofile=coverage/coverage.out -covermode=atomic -coverpkg=./... && \
 	go tool cover -html=coverage/coverage.out -o coverage/index.html && \
+	go tool cover -func=coverage/coverage.out | tee coverage/coverage.txt && \
 	go tool cover -func=coverage/coverage.out | grep total: | awk '{if (substr($$3, 1, length($$3)-1) < 90) { print "Coverage " $$3 " is below 90%"; exit 1 } else { print "Coverage " $$3 " meets minimum 90% requirement" }}'
 
 test-coverage:
-	go tool cover -func=coverage/coverage.out | grep total: | awk '{printf "Total coverage: %s\n", $$3}'
+	gotestsum --format testdox --hide-summary output --format-hide-empty-pkg --packages=all -- -v ./... -coverprofile=coverage/coverage.out -covermode=atomic -coverpkg=./... && \
+	go tool cover -html=coverage/coverage.out -o coverage/index.html && \
+	go tool cover -func=coverage/coverage.out | tee coverage/coverage.txt
+	@coverage=$$(go tool cover -func=coverage/coverage.out | grep total | awk '{print $$3}' | sed 's/%//'); \
+	if [ $$(echo "$$coverage < 90" | bc -l) -eq 1 ]; then \
+		echo "Code coverage is below 90% (current: $$coverage%)"; \
+		exit 1; \
+	fi
+
 
 test-watch: ## Watch for changes and run tests
 	gotestsum --watch --format testdox
 
 test-verbose: ## Run tests in verbose mode
-	gotestsum --format standard-verbose --packages=all -- -v ./... --cover
+	gotestsum --format standard-verbose --hide-summary output --format-hide-empty-pkg --packages=all -- -v ./... -coverprofile=coverage/coverage.out -covermode=atomic -coverpkg=./...
 
 clean:
 	$(GOCMD) clean
-	rm -rf $(BIN_DIR)
+	rm -rf $(BIN_DIR) coverage/coverage.out coverage/coverage.txt coverage/index.html
 
 run:
 	$(GOBUILD) -o $(RUN_BIN) -v
@@ -78,8 +87,8 @@ release: build
 
 .PHONY: lint
 lint:
-	golangci-lint run
+	golangci-lint run ./...
 
 .PHONY: lint-fix
 lint-fix:
-	golangci-lint run --fix
+	golangci-lint run ./... --fix
