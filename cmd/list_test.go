@@ -45,17 +45,17 @@ func (s *ListCommandTestSuite) TearDownTest() {
 }
 
 func (s *ListCommandTestSuite) TestListSingleTask() {
-
+	now := time.Now()
 	newTask := task.Task{
 		ID:          1,
 		Title:       "Test Task",
 		Description: "This is a test task",
 		Priority:    "High",
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
+		CreatedAt:   now,
+		UpdatedAt:   now,
 	}
 
-	err := task.Storage.Save(fileStorage, []task.Task{newTask})
+	err := task.DefaultStorage.Save([]task.Task{newTask})
 	assert.NoError(s.T(), err, "Failed to save tasks")
 
 	err = rootCmd.Execute()
@@ -63,21 +63,16 @@ func (s *ListCommandTestSuite) TestListSingleTask() {
 	assert.NoError(s.T(), err)
 	output := s.buffer.String()
 
-	expectedStrings := []string{
-		"ID: 1",
-		"Title: Test Task",
-		"Description: This is a test task",
-		"Priority: High",
-	}
-
-	for _, expected := range expectedStrings {
-		assert.Contains(s.T(), output, expected)
-	}
+	assert.Contains(s.T(), output, "Your Tasks:")
+	assert.Contains(s.T(), output, "1")
+	assert.Contains(s.T(), output, "Test Task")
+	assert.Contains(s.T(), output, "This is a test task")
+	assert.Contains(s.T(), output, "High")
+	assert.Contains(s.T(), output, now.Format("Mon, 02 Jan 2006 15:04"))
 }
 
 func (s *ListCommandTestSuite) TestListEmptyTaskList() {
-
-	err := task.Storage.Save(fileStorage, []task.Task{})
+	err := task.DefaultStorage.Save([]task.Task{})
 	assert.NoError(s.T(), err, "Failed to save empty task list")
 
 	err = rootCmd.Execute()
@@ -87,27 +82,27 @@ func (s *ListCommandTestSuite) TestListEmptyTaskList() {
 }
 
 func (s *ListCommandTestSuite) TestListMultipleTasks() {
-
+	now := time.Now()
 	tasks := []task.Task{
 		{
 			ID:          1,
 			Title:       "First Task",
 			Description: "This is the first task",
 			Priority:    "High",
-			CreatedAt:   time.Now(),
-			UpdatedAt:   time.Now(),
+			CreatedAt:   now,
+			UpdatedAt:   now,
 		},
 		{
 			ID:          2,
 			Title:       "Second Task",
 			Description: "This is the second task",
 			Priority:    "Low",
-			CreatedAt:   time.Now(),
-			UpdatedAt:   time.Now(),
+			CreatedAt:   now,
+			UpdatedAt:   now,
 		},
 	}
 
-	err := task.DefaultStorage.Save(tasks) // Use DefaultStorage instead of Storage interface
+	err := task.DefaultStorage.Save(tasks)
 	assert.NoError(s.T(), err, "Failed to save tasks")
 
 	err = rootCmd.Execute()
@@ -115,28 +110,19 @@ func (s *ListCommandTestSuite) TestListMultipleTasks() {
 	assert.NoError(s.T(), err)
 	output := s.buffer.String()
 
-	expectedStrings := []string{
-		"Title: First Task",
-		"Description: This is the first task",
-		"Priority: High",
-		"Title: Second Task",
-		"Description: This is the second task",
-		"Priority: Low",
-	}
-
-	for _, expected := range expectedStrings {
-		assert.Contains(s.T(), output, expected)
-	}
+	assert.Contains(s.T(), output, "Your Tasks:")
+	assert.Contains(s.T(), output, "1")
+	assert.Contains(s.T(), output, "First Task")
+	assert.Contains(s.T(), output, "This is the first task")
+	assert.Contains(s.T(), output, "High")
+	assert.Contains(s.T(), output, "2")
+	assert.Contains(s.T(), output, "Second Task")
+	assert.Contains(s.T(), output, "This is the second task")
+	assert.Contains(s.T(), output, "Low")
+	assert.Contains(s.T(), output, now.Format("Mon, 02 Jan 2006 15:04"))
 }
 
 func (s *ListCommandTestSuite) TestListTasksWithInvalidFile() {
-	// Save the original storage
-	originalStorage := task.DefaultStorage
-	defer func() {
-		task.DefaultStorage = originalStorage
-	}()
-
-	// Use a non-existent directory path
 	invalidPath := "./list/invalid/path/tasks.json"
 	dataFile = invalidPath
 	fileStorage = &task.FileStorage{FilePath: invalidPath}

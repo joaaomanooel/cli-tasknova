@@ -1,9 +1,12 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/joaaomanooel/cli-tasknova/internal/constants"
 	"github.com/joaaomanooel/cli-tasknova/internal/errors"
 	"github.com/joaaomanooel/cli-tasknova/internal/task"
+	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 )
 
@@ -23,16 +26,23 @@ func listTasksCmd() *cobra.Command {
 				return nil
 			}
 
+			table := tablewriter.NewWriter(cmd.OutOrStdout())
+			table.SetHeader([]string{"ID", "Title", "Description", "Priority", "Created At", "Updated At"})
+			table.SetRowLine(true)
+
 			cmd.Println("Your Tasks:")
 			for _, task := range tasks {
-				cmd.Printf("ID: %d\n", task.ID)
-				cmd.Printf("Title: %s\n", task.Title)
-				cmd.Printf("Description: %s\n", task.Description)
-				cmd.Printf("Priority: %s\n", task.Priority)
-				cmd.Printf("Created At: %s\n", task.CreatedAt.Format("Mon, 02 Jan 2006 15:04"))
-				cmd.Printf("Updated At: %s\n", task.UpdatedAt.Format("Mon, 02 Jan 2006 15:04"))
-				cmd.Println("------------------------")
+				table.Append([]string{
+					fmt.Sprintf("%d", task.ID),
+					task.Title,
+					task.Description,
+					task.Priority,
+					task.CreatedAt.Format("Mon, 02 Jan 2006 15:04"),
+					task.UpdatedAt.Format("Mon, 02 Jan 2006 15:04"),
+				})
 			}
+
+			table.Render()
 			return nil
 		},
 	}
