@@ -1,11 +1,12 @@
 # TaskNova CLI
 
-TaskNova is a command-line interface (CLI) task management tool built in Go using the Cobra framework. It helps you manage tasks and notes efficiently through terminal commands.
+A powerful command-line task manager built with Go.
 
 ## Features
 
 - Create tasks with title, description, and priority
 - List all tasks with formatted output
+- Update tasks by ID
 - Delete tasks by ID
 - Persistent storage using JSON format
 - Simple and intuitive command-line interface
@@ -18,16 +19,11 @@ go install github.com/joaaomanooel/cli-tasknova@latest
 
 ## Usage
 
-### Add a Task
+### Add Task
 
 ```bash
 tasknova add --title "Task Title" --description "Task Description" --priority "high"
 ```
-
-Options:
-- `-t, --title`: Task title (required)
-- `-d, --description`: Task description (optional)
-- `-p, --priority`: Task priority (optional, default: "low")
 
 ### List Tasks
 
@@ -43,14 +39,17 @@ This command displays all tasks with their details including:
 - Creation date
 - Last update date
 
-### Delete a Task
+### Update Task
 
 ```bash
-tasknova delete --id 1234
+tasknova update --id <task_id> --title "New Title" --description "New Description" --priority "low"
 ```
 
-Options:
-- `-i, --id`: Task ID (required)
+### Delete Task
+
+```bash
+tasknova delete --id <task_id>
+```
 
 ## Development
 
