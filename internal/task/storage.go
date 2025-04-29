@@ -2,6 +2,7 @@ package task
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"sync"
@@ -21,6 +22,16 @@ type Storage interface {
 	Read() ([]Task, error)
 	GetByID(id uint) (*Task, error)
 	Update(task *Task) error
+	Delete(id uint) error
+}
+
+func (fs *FileStorage) directoryExists() error {
+	dir := filepath.Dir(fs.FilePath)
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		return errors.NewTaskError(constants.WriteError, "Directory does not exist", err)
+	}
+
+	return nil
 }
 
 func (s *FileStorage) initTasksMap() error {
@@ -76,13 +87,30 @@ func (s *FileStorage) Update(task *Task) error {
 	return s.Save(tasks)
 }
 
-func (fs *FileStorage) directoryExists() error {
-	dir := filepath.Dir(fs.FilePath)
-	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		return errors.NewTaskError(constants.WriteError, "Directory does not exist", err)
+func (s *FileStorage) Delete(id uint) error {
+	if err := s.initTasksMap(); err != nil {
+		return err
 	}
 
-	return nil
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if _, exists := s.tasks[id]; !exists {
+		return errors.NewTaskError(
+			constants.NotFoundError,
+			fmt.Sprintf("Task with ID %v not found", id),
+			nil,
+		)
+	}
+
+	delete(s.tasks, id)
+
+	tasks := make([]Task, 0, len(s.tasks))
+	for _, t := range s.tasks {
+		tasks = append(tasks, t)
+	}
+
+	return s.Save(tasks)
 }
 
 func (fs *FileStorage) Save(tasks []Task) error {
