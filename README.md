@@ -1,6 +1,6 @@
 # TaskNova CLI
 
-A powerful command-line task manager built with Go.
+Your terminal's secret weapon for task mastery & flow
 
 ## Features
 
