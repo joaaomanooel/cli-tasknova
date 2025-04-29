@@ -80,19 +80,19 @@ cd cli-tasknova
 
 3. Install dependencies
 ```bash
-go mod download
+make deps
 ```
 
 4. Build the project
 ```bash
-go build
+make build
 ```
 
 ### Testing
 
 Run the test suite:
 ```bash
-go test ./...
+make test
 ```
 
 ## Contributing
