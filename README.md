@@ -2,6 +2,22 @@
 
 Your terminal's secret weapon for task mastery & flow
 
+## Table of Contents
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Add Task](#add-task)
+  - [List Tasks](#list-tasks)
+  - [Update Task](#update-task)
+  - [Delete Task](#delete-task)
+- [Development](#development)
+  - [Prerequisites](#prerequisites)
+  - [Code Quality](#code-quality)
+  - [Setup](#setup)
+  - [Testing](#testing)
+- [Contributing](#contributing)
+- [License](#license)
+
 ## Features
 
 - Create tasks with title, description, and priority
