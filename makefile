@@ -52,7 +52,8 @@ run:
 	./$(RUN_BIN)
 
 deps:
-	$(GOMOD) download
+	$(GOMOD) download && \
+  go install gotest.tools/gotestsum@latest
 
 tidy:
 	$(GOMOD) tidy

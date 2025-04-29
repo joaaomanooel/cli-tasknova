@@ -43,8 +43,3 @@ jobs:
       - name: Run linter
         run: make lint
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          file: ./coverage/coverage.out
-          fail_ci_if_error: true
