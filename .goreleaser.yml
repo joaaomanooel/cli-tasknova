@@ -24,7 +24,7 @@ archives:
       - docs/man/*
 
 brews:
-  - name: tasknova
+  - name: joaaomanooel-tasknova
     repository:
       owner: joaaomanooel
       name: tap
@@ -32,8 +32,10 @@ brews:
     skip_upload: false
 
 scoops:
-  - name: tasknova
-    directory: bucket
+  - name: joaaomanooel-tasknova
+    repository:
+      owner: joaaomanooel
+      name: bucket
     homepage: https://github.com/joaaomanooel/cli-tasknova
     description: "TaskNova CLI for managing tasks and notes"
     license: MIT
