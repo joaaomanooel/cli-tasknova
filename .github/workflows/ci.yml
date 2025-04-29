@@ -34,7 +34,7 @@ jobs:
           version: v2.1.1
 
       - name: Run tests and check coverage
-        run: make coverage
+        run: make test-coverage
 
       - name: Run linter
         run: make lint
