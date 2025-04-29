@@ -14,7 +14,7 @@ builds:
       - arm64
 
 archives:
-  - format: tar.gz
+  - formats: [tar.gz]
     name_template: >-
       {{ .ProjectName }}_
       {{- .Version }}_
@@ -45,4 +45,4 @@ changelog:
   sort: asc
 
 snapshot:
-  name_template: "{{ .Tag }}-{{ .ShortCommit }}"
+  version_template: "{{ .Tag }}-{{ .ShortCommit }}"
