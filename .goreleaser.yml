@@ -33,7 +33,7 @@ brews:
 
 scoops:
   - name: tasknova
-    folder: bucket
+    directory: bucket
     homepage: https://github.com/joaaomanooel/cli-tasknova
     description: "TaskNova CLI for managing tasks and notes"
     license: MIT
