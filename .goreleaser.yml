@@ -15,27 +15,31 @@ builds:
 
 archives:
   - format: tar.gz
-    replacements:
-      darwin: macOS
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- .Version }}_
+      {{- if eq .Os "darwin" }}macOS{{ else }}{{ .Os }}{{ end }}_
+      {{- .Arch }}
     files:
       - docs/man/*
 
 brews:
   - name: tasknova
-    tap:
+    repository:
       owner: joaaomanooel
       name: tap
     homepage: https://github.com/joaaomanooel/cli-tasknova
-    draft: false
+    skip_upload: false
 
 scoops:
   - name: tasknova
-    directory: bucket
+    folder: bucket
     homepage: https://github.com/joaaomanooel/cli-tasknova
     description: "TaskNova CLI for managing tasks and notes"
-    version: "{{ .Version }}"
-    url_template: "https://github.com/joaaomanooel/cli-tasknova/releases/download/{{ .Tag }}/tasknova_{{ .Version }}_{{ .Os }}_{{ .Arch }}.zip"
-    bin: "tasknova.exe"
+    license: MIT
+    url_template: "https://github.com/joaaomanooel/cli-tasknova/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+    persist:
+      - "data"
 
 changelog:
   sort: asc
