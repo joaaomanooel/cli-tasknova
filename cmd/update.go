@@ -21,37 +21,24 @@ func updateTaskCmd() *cobra.Command {
 			description, _ := cmd.Flags().GetString("description")
 			priority, _ := cmd.Flags().GetString("priority")
 
-			tasks, err := task.DefaultStorage.Read()
+			currentTask, err := task.DefaultStorage.GetByID(id)
 			if err != nil {
 				return err
 			}
 
-			updated := false
-			for i, t := range tasks {
-				if t.ID == id {
-					if title != "" {
-						t.Title = title
-					}
-					if description != "" {
-						t.Description = description
-					}
-					if priority != "" {
-						t.Priority = priority
-					}
-
-					t.UpdatedAt = time.Now()
-					tasks[i] = t
-					updated = true
-
-					break
-				}
+			if title != "" {
+				currentTask.Title = title
+			}
+			if description != "" {
+				currentTask.Description = description
+			}
+			if priority != "" {
+				currentTask.Priority = priority
 			}
 
-			if !updated {
-				return errors.NewTaskError(constants.NotFoundError, "Task not found", err)
-			}
+			currentTask.UpdatedAt = time.Now()
 
-			if err := task.DefaultStorage.Save(tasks); err != nil {
+			if err := task.DefaultStorage.Update(currentTask); err != nil {
 				return errors.NewTaskError(constants.UpdateError, "Failed to update task", err)
 			}
 
