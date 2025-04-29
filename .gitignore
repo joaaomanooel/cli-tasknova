@@ -6,3 +6,4 @@ tasks.json
 
 # Tests
 coverage/*
+!coverage/.gitkeep
