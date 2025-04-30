@@ -5,13 +5,8 @@ project_name: tasknova
 builds:
   - binary: tasknova
     main: ./main.go
-    goos:
-      - linux
-      - darwin
-      - windows
-    goarch:
-      - amd64
-      - arm64
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
 
 archives:
   - formats: [tar.gz]
@@ -31,15 +26,29 @@ archives:
 #     homepage: https://github.com/joaaomanooel/cli-tasknova
 #     skip_upload: false
 
+# brews:
+#   - repository:
+#       owner: joaaomanooel
+#       name: tap
+#       token: "{{ .Env.GITHUB_TOKEN }}"
+#     goarm: "7"
+#     homepage: https://github.com/joaaomanooel/cli-tasknova
+#     license: MIT
+#     description: "A CLI task manager"
+
 brews:
-  - repository:
+  - name: tasknova
+    repository:
       owner: joaaomanooel
-      name: tap
-      token: "{{ .Env.GITHUB_TOKEN }}"
-    goarm: "7"
+      name: homebrew-tap  # Changed from 'tap' to 'homebrew-tap'
+      token: "{{ .Env.GITHUB_TOKEN }}"  # Added token for authentication
     homepage: https://github.com/joaaomanooel/cli-tasknova
+    description: "A CLI task manager for organizing tasks and notes"
     license: MIT
-    description: "A CLI task manager"
+    install: |
+      bin.install "tasknova"
+    test: |
+      system "#{bin}/tasknova --version"
 
     # extra_install: |-
     #   bash_completion.install "completions/tasknova.bash" => "tasknova"
