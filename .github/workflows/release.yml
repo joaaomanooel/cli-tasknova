@@ -25,7 +25,7 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
 
       - name: Run tests
-        run: go test ./... -coverprofile coverage.out
+        run: go test ./...
 
       - name: Publish Release
         uses: goreleaser/goreleaser-action@v2

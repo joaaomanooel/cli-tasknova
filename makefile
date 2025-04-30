@@ -45,7 +45,7 @@ test-verbose: ## Run tests in verbose mode
 
 clean:
 	$(GOCMD) clean
-	rm -rf $(BIN_DIR) coverage/coverage.out coverage/coverage.txt coverage/index.html
+	rm -rf $(BIN_DIR) dist coverage/coverage.out coverage/coverage.txt coverage/index.html
 
 run:
 	$(GOBUILD) -o $(RUN_BIN) -v
