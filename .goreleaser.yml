@@ -3,20 +3,42 @@ version: 2
 project_name: tasknova
 
 builds:
-  - binary: tasknova
+  - id: linux_amd64
+    binary: tasknova
     main: ./main.go
-    goos: [linux, darwin, windows]
-    goarch: [amd64, arm64]
+    goos: [linux]
+    goarch: [amd64]
+  - id: linux_arm64
+    binary: tasknova
+    main: ./main.go
+    goos: [linux]
+    goarch: [arm64]
+  - id: darwin_amd64
+    binary: tasknova
+    main: ./main.go
+    goos: [darwin]
+    goarch: [amd64]
+  - id: darwin_arm64
+    binary: tasknova
+    main: ./main.go
+    goos: [darwin]
+    goarch: [arm64]
+  - id: windows_amd64
+    binary: tasknova.exe
+    main: ./main.go
+    goos: [windows]
+    goarch: [amd64]
+  - id: windows_arm64
+    binary: tasknova.exe
+    main: ./main.go
+    goos: [windows]
+    goarch: [arm64]
 
 archives:
-  - formats: [tar.gz]
-    name_template: >-
-      {{ .ProjectName }}_
-      {{- .Version }}_
-      {{- if eq .Os "darwin" }}macOS{{ else }}{{ .Os }}{{ end }}_
-      {{- .Arch }}
-    files:
-      - docs/man/*
+  - format: tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+  - format: zip
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
 
 brews:
   - name: tasknova
