@@ -1,3 +1,5 @@
+version: 2
+
 project_name: tasknova
 
 builds:
@@ -33,10 +35,12 @@ brews:
   - repository:
       owner: joaaomanooel
       name: tap
-    directory: contents
+      token: "{{ .Env.GITHUB_TOKEN }}"
     goarm: "7"
     homepage: https://github.com/joaaomanooel/cli-tasknova
     license: MIT
+    description: "A CLI task manager"
+
     # extra_install: |-
     #   bash_completion.install "completions/tasknova.bash" => "tasknova"
     #   zsh_completion.install "completions/tasknova.zsh" => "_tasknova"
