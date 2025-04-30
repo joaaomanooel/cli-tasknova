@@ -1,5 +1,3 @@
-version: 2
-
 project_name: tasknova
 
 builds:
@@ -23,25 +21,27 @@ archives:
     files:
       - docs/man/*
 
+# brews:
+#   - name: tasknova
+#     repository:
+#       owner: joaaomanooel
+#       name: tap
+#     homepage: https://github.com/joaaomanooel/cli-tasknova
+#     skip_upload: false
+
 brews:
-  - name: tasknova
-    repository:
+  - repository:
       owner: joaaomanooel
       name: tap
+    directory: contents
+    goarm: "7"
     homepage: https://github.com/joaaomanooel/cli-tasknova
-    skip_upload: false
-
-scoops:
-  - name: tasknova
-    repository:
-      owner: joaaomanooel
-      name: bucket
-    homepage: https://github.com/joaaomanooel/cli-tasknova
-    description: "TaskNova CLI for managing tasks and notes"
     license: MIT
-    url_template: "https://github.com/joaaomanooel/cli-tasknova/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
-    persist:
-      - "data"
+    # extra_install: |-
+    #   bash_completion.install "completions/tasknova.bash" => "tasknova"
+    #   zsh_completion.install "completions/tasknova.zsh" => "_tasknova"
+    #   fish_completion.install "completions/tasknova.fish"
+    #   man1.install "docs/man/tasknova.1.gz"
 
 changelog:
   sort: asc
